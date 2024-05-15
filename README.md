@@ -22,6 +22,8 @@ and performance standards, Our System provided Four Services:
       • Highly compatible drivers allow existing COM port-based applications to operate over USB without significant modifications.
       • Supports USB bulk transfer mode for higher throughput and flexible baud rates ranging from 75 bps to 6M bps.
       • Compliant with USB2.0 full-speed devices and includes integrated transceiver.
+    ![image](https://github.com/Eman22adel/AUTODIAG--On-Board-Diagnostic-System-for-Vehicles-/blob/main/Picture1.jpg)
+   
    # SOFTWARE :
       • PL2303 Windows Driver: Allows the PL2303 USB to Serial/UART Bridge Controller to interface with Windows operating systems, simulating a traditional COM
         port.
@@ -35,10 +37,13 @@ and performance standards, Our System provided Four Services:
       • Visual Studio Code: Free and open-source code editor for building and debugging applications, with support for various programming languages.
    
    # PROTOCOL :
-      • Universal Asynchronous Receiver-Transmitter (UART):
+      • Universal Asynchronous Receiver-Transmitter (UART).
+   
       • Protocol for asynchronous serial communication with configurable data format and transmission speeds.
+   
       • Supports simplex, full duplex, and half duplex communication modes.
    
-      ![image](https://github.com/Eman22adel/AUTODIAG--On-Board-Diagnostic-System-for-Vehicles-/blob/main/Screenshot%202024-05-15%20141234.png)
+      ![image](https://github.com/Eman22adel/AUTODIAG--On-Board-Diagnostic-System-for-Vehicles-/blob/main/Picture7.jpg)
 
+      
 
