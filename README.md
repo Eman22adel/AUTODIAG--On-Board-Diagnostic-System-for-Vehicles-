@@ -91,15 +91,18 @@ and performance standards, Our System provided Four Services:
 2- SPI : 
 - CONFIGRATION :
   
-![image](https://github.com/Eman22adel/AUTODIAG--On-Board-Diagnostic-System-for-Vehicles-/blob/main/Picture7.jpg)
+![image](https://github.com/Eman22adel/AUTODIAG--On-Board-Diagnostic-System-for-Vehicles-/blob/main/Screenshot%202024-05-15%20150810.png)
           
 - DATA :
   
-![image](https://github.com/Eman22adel/AUTODIAG--On-Board-Diagnostic-System-for-Vehicles-/blob/main/Picture7.jpg)
+![image](https://github.com/Eman22adel/AUTODIAG--On-Board-Diagnostic-System-for-Vehicles-/blob/main/Screenshot%202024-05-15%20151221.png)
+![image](https://github.com/Eman22adel/AUTODIAG--On-Board-Diagnostic-System-for-Vehicles-/blob/main/Screenshot%202024-05-15%20151301.png)
+![image](https://github.com/Eman22adel/AUTODIAG--On-Board-Diagnostic-System-for-Vehicles-/blob/main/Screenshot%202024-05-15%20151308.png)
+![image](https://github.com/Eman22adel/AUTODIAG--On-Board-Diagnostic-System-for-Vehicles-/blob/main/Screenshot%202024-05-15%20151335.png)
 
 
- # 3. STM32 ST-LINK Utility:    
-   # HARDWARE :
+# 3. STM32 ST-LINK Utility:    
+# HARDWARE :
  The STM32 ST-LINK Utility is a full-featured software interface for programming STM32 microcontrollers1. Here’s a summary of its key features:
 
 - Ease of Use: It provides an easy-to-use and efficient environment for reading, writing, and verifying a memory device.
@@ -112,14 +115,16 @@ and performance standards, Our System provided Four Services:
   
 - Support for Various Formats: It supports Motorola S19, Intel HEX, and binary formats.
          
-  # SOFTWARE :
+# SOFTWARE :
   
  ![image](https://github.com/Eman22adel/AUTODIAG--On-Board-Diagnostic-System-for-Vehicles-/blob/main/Screenshot%202024-05-15%20143440.png)
 
- # 3. ESP8266:   
- # HARDWARE :
- # SOFTWARE :
- # PROTOCOL :
+# 3. ESP8266:   
+# HARDWARE :
+# SOFTWARE :
+# PROTOCOL :
+
+
 
 
 
