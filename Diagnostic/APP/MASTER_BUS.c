@@ -1,7 +1,7 @@
 /*
- * MASTER_BUS.c
+ * Master_Bus.c
  *
- *  Created on: Feb 15, 2024
+ *  Created on: Jun 8, 2024
  *      Author: eman adel
  */
 
@@ -9,15 +9,20 @@
 #include "SERIAL_COM.h"
 #include "MASTER_BUS.h"
 
-SYSTEM_Data DATA;
 
+static uint8_t TX_BUFFER[TX_BUFFER_SIZE]= "1\n\r";
 
-uint8_t TX_BUFFER[TX_BUFFER_SIZE]= "Remote frame";
 
 Return_Type HAL_MASTER_BUS_Init(void);
 
 Return_Type HAL_MASTER_BUS_MainFunction(void){
-	HAL_SERIAL_COMH_Send(TX_BUFFER,TX_BUFFER_SIZE);
+	Return_Type Return_Result = Return_NOT_OK;
+
+	if(SERIAL_COM_Send(TX_BUFFER,TX_BUFFER_SIZE) == Return_OK){
+		Return_Result = Return_OK;
+	}
 	return Return_OK;
 }
+
+
 

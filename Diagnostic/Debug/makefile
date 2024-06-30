@@ -1,6 +1,6 @@
 ################################################################################
 # Automatically-generated file. Do not edit!
-# Toolchain: GNU Tools for STM32 (11.3.rel1)
+# Toolchain: GNU Tools for STM32 (12.3.rel1)
 ################################################################################
 
 -include ../makefile.init
@@ -66,8 +66,8 @@ all: main-build
 main-build: Diagnostic.elf secondary-outputs
 
 # Tool invocations
-Diagnostic.elf Diagnostic.map: $(OBJS) $(USER_OBJS) C:\Users\emana\STM32CubeIDE\workspace_1.13.2\Diagnostic\STM32F103C8TX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "Diagnostic.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m3 -T"C:\Users\emana\STM32CubeIDE\workspace_1.13.2\Diagnostic\STM32F103C8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Diagnostic.map" -Wl,--gc-sections -static -L"C:/Users/emana/STM32CubeIDE/workspace_1.13.2/Diagnostic/APP" -L"C:/Users/emana/STM32CubeIDE/workspace_1.13.2/Diagnostic/HAL" --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Diagnostic.elf Diagnostic.map: $(OBJS) $(USER_OBJS) C:\Users\emana\STM32CubeIDE\workspace_1.13.2\Diagnostic\Diagnostic\STM32F103C8TX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "Diagnostic.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m3 -T"C:\Users\emana\STM32CubeIDE\workspace_1.13.2\Diagnostic\Diagnostic\STM32F103C8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Diagnostic.map" -Wl,--gc-sections -static -L"C:/Users/emana/STM32CubeIDE/workspace_1.13.2/Diagnostic/Diagnostic/APP" -L"C:/Users/emana/STM32CubeIDE/workspace_1.13.2/Diagnostic/Diagnostic/HAL" --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

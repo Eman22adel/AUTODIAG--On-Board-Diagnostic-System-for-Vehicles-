@@ -19,11 +19,14 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "cmsis_os.h"
+#include "Master_Bus.h"
+#include "DEM.h"
+#include "SERIAL_COM.h"
+#include "COM_H.h"
+#include "DCM.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
-
 
 /* USER CODE END Includes */
 
@@ -43,15 +46,17 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
+CRC_HandleTypeDef hcrc;
+
 SPI_HandleTypeDef hspi1;
 
 UART_HandleTypeDef huart1;
 DMA_HandleTypeDef hdma_usart1_rx;
 
-osThreadId main_masterHandle;
-osThreadId main_DemHandle;
+osThreadId defaultTaskHandle;
+osThreadId TASK1Handle;
+osThreadId TASK2Handle;
 /* USER CODE BEGIN PV */
-
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -60,19 +65,26 @@ static void MX_GPIO_Init(void);
 static void MX_DMA_Init(void);
 static void MX_USART1_UART_Init(void);
 static void MX_SPI1_Init(void);
-void Startmain_master(void const * argument);
-void Startmain_Dem(void const * argument);
+static void MX_CRC_Init(void);
+void StartDefaultTask(void const * argument);
+void Main_Master(void const * argument);
+void Main_DEM(void const * argument);
 
 /* USER CODE BEGIN PFP */
-
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-#define RX_BUFFER_SIZE 50
-uint8_t RXBUFFER_SIZE[RX_BUFFER_SIZE];
 
+/*Recieve data from uart*/
+#define RX_BUFFER_SIZE 40
+uint8_t RXBUFFER[RX_BUFFER_SIZE];
+
+/*Recieve data from spi*/
 uint16_t  pRxData;
+
+
+
 /* USER CODE END 0 */
 
 /**
@@ -106,16 +118,11 @@ int main(void)
   MX_DMA_Init();
   MX_USART1_UART_Init();
   MX_SPI1_Init();
+  MX_CRC_Init();
   /* USER CODE BEGIN 2 */
-
-  // UART
-  HAL_UARTEx_ReceiveToIdle_DMA(&huart1, RXBUFFER_SIZE, RX_BUFFER_SIZE);
+  HAL_UARTEx_ReceiveToIdle_DMA(&huart1, RXBUFFER, RX_BUFFER_SIZE);
   __HAL_DMA_DISABLE_IT(&hdma_usart1_rx,DMA_IT_HT);
-
-
-  // SPI
   HAL_SPI_Receive_IT(&hspi1, &pRxData, 2);
-
   /* USER CODE END 2 */
 
   /* USER CODE BEGIN RTOS_MUTEX */
@@ -135,13 +142,17 @@ int main(void)
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */
-  /* definition and creation of main_master */
-  osThreadDef(main_master, Startmain_master, osPriorityNormal, 0, 128);
-  main_masterHandle = osThreadCreate(osThread(main_master), NULL);
+  /* definition and creation of defaultTask */
+  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
+  defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
-  /* definition and creation of main_Dem */
-  osThreadDef(main_Dem, Startmain_Dem, osPriorityNormal, 0, 128);
-  main_DemHandle = osThreadCreate(osThread(main_Dem), NULL);
+  /* definition and creation of TASK1 */
+  osThreadDef(TASK1, Main_Master, osPriorityHigh, 0, 128);
+  TASK1Handle = osThreadCreate(osThread(TASK1), NULL);
+
+  /* definition and creation of TASK2 */
+  osThreadDef(TASK2, Main_DEM, osPriorityIdle, 0, 128);
+  TASK2Handle = osThreadCreate(osThread(TASK2), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -153,12 +164,15 @@ int main(void)
   /* We should never get here as control is now taken by the scheduler */
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+   /* USER CODE BEGIN WHILE */
+
+  /* Infinite loop */
+  /* USER CODE BEGIN WHILE */
   while (1)
   {
     /* USER CODE END WHILE */
-
-    /* USER CODE BEGIN 3 */
   }
+  /* USER CODE BEGIN 3 */
   /* USER CODE END 3 */
 }
 
@@ -174,13 +188,12 @@ void SystemClock_Config(void)
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
   */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
-  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
-  RCC_OscInitStruct.HSEPredivValue = RCC_HSE_PREDIV_DIV1;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
+  RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-  RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL9;
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI_DIV2;
+  RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL16;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
     Error_Handler();
@@ -193,12 +206,38 @@ void SystemClock_Config(void)
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
-  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;
+  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 
   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK)
   {
     Error_Handler();
   }
+}
+
+/**
+  * @brief CRC Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_CRC_Init(void)
+{
+
+  /* USER CODE BEGIN CRC_Init 0 */
+
+  /* USER CODE END CRC_Init 0 */
+
+  /* USER CODE BEGIN CRC_Init 1 */
+
+  /* USER CODE END CRC_Init 1 */
+  hcrc.Instance = CRC;
+  if (HAL_CRC_Init(&hcrc) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN CRC_Init 2 */
+
+  /* USER CODE END CRC_Init 2 */
+
 }
 
 /**
@@ -223,7 +262,7 @@ static void MX_SPI1_Init(void)
   hspi1.Init.DataSize = SPI_DATASIZE_16BIT;
   hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
   hspi1.Init.CLKPhase = SPI_PHASE_1EDGE;
-  hspi1.Init.NSS = SPI_NSS_HARD_INPUT;
+  hspi1.Init.NSS = SPI_NSS_SOFT;
   hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
   hspi1.Init.TIMode = SPI_TIMODE_DISABLE;
   hspi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
@@ -306,64 +345,76 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-
-
-/// CALL BACK UART
 void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 {
   if(huart->Instance == USART1){
-	  HAL_UARTEx_ReceiveToIdle_DMA(&huart1, RXBUFFER_SIZE, RX_BUFFER_SIZE);
-	  HAL_SERIAL_COMH_Receive(RXBUFFER_SIZE);
+	  HAL_UARTEx_ReceiveToIdle_DMA(&huart1, RXBUFFER, RX_BUFFER_SIZE);
+	  SERIAL_COM_Receive(RXBUFFER);
 	  __HAL_DMA_DISABLE_IT(&hdma_usart1_rx,DMA_IT_HT);
   }
 }
 
-
-/// CALL BACK SPI
 void HAL_SPI_RxCpltCallback(SPI_HandleTypeDef *hspi)
 {
-	HAL_COMH_Receive(&pRxData);
+	HAL_COMH_Receive();
 	HAL_SPI_Receive_IT(&hspi1, &pRxData, 2);
 }
-
 /* USER CODE END 4 */
 
-/* USER CODE BEGIN Header_Startmain_master */
+/* USER CODE BEGIN Header_StartDefaultTask */
 /**
-  * @brief  Function implementing the main_master thread.
+  * @brief  Function implementing the defaultTask thread.
   * @param  argument: Not used
   * @retval None
   */
-/* USER CODE END Header_Startmain_master */
-void Startmain_master(void const * argument)
+/* USER CODE END Header_StartDefaultTask */
+void StartDefaultTask(void const * argument)
 {
   /* USER CODE BEGIN 5 */
   /* Infinite loop */
   for(;;)
   {
-	  HAL_MASTER_BUS_MainFunction();
-	  osDelay(200);
+    osDelay(1);
   }
   /* USER CODE END 5 */
 }
 
-/* USER CODE BEGIN Header_Startmain_Dem */
+/* USER CODE BEGIN Header_Main_Master */
 /**
-* @brief Function implementing the main_Dem thread.
+* @brief Function implementing the TASK1 thread.
 * @param argument: Not used
 * @retval None
 */
-/* USER CODE END Header_Startmain_Dem */
-void Startmain_Dem(void const * argument)
+/* USER CODE END Header_Main_Master */
+void Main_Master(void const * argument)
 {
-  /* USER CODE BEGIN Startmain_Dem */
+  /* USER CODE BEGIN Main_Master */
   /* Infinite loop */
   for(;;)
   {
-	  HAL_DEM_MainFunction();
-	  osDelay(200);
+	  HAL_MASTER_BUS_MainFunction();
+	  osDelay(500);
   }
-  /* USER CODE END Startmain_Dem */
+  /* USER CODE END Main_Master */
+}
+
+/* USER CODE BEGIN Header_Main_DEM */
+/**
+* @brief Function implementing the TASK2 thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_Main_DEM */
+void Main_DEM(void const * argument)
+{
+  /* USER CODE BEGIN Main_DEM */
+  /* Infinite loop */
+  for(;;)
+  {
+	 HAL_DEM_MainFunction();
+	 osDelay(500);
+  }
+  /* USER CODE END Main_DEM */
 }
 
 /**

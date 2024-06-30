@@ -1,2 +1,2 @@
-../HAL/COM_H.c:12:13:HAL_COMH_Receive	2
-../HAL/COM_H.c:20:13:HAL_COMH_Send	1
+../HAL/COM_H.c:16:13:HAL_COMH_Receive	2
+../HAL/COM_H.c:25:13:HAL_COMH_Send	25

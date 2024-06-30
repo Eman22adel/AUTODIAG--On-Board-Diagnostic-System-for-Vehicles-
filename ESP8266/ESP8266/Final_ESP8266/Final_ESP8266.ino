@@ -14,7 +14,7 @@
 #include <stdint.h>
 #include <string.h>
 
-#include "D:\7ODA\Career\GP\MQTT\ESP FF24\Final_ESP8266\SPI.h"
+#include "C:\Users\emana\Desktop\ESP_FF24_Final\Final_ESP8266\SPI.h"
 #include "HardwareSerial.h"
 #include "Arduino.h"
 
@@ -26,8 +26,8 @@ const int led = 5;
 #define SPI_OVERLAP_SS 0
 
 // Wi-Fi credentials
-const char* ssid = "Yasmeen's Galaxy A52";
-const char* password = "Eileanor";
+const char* ssid = "Eng";
+const char* password = "010011012";
 /*
 const char* ssid = "Risk";
 const char* password = "Risk2040";
@@ -789,7 +789,7 @@ void splitArrayAndPrint(char arr[], int size, int step,std::string* first, std::
         for (int j = i; j < std::min(i + step, size); ++j) {
             str += arr[j];
         }
-        std::cout << "DTC " << count+1 << ": "<< str << std::endl;
+        //std::cout << "DTC " << count+1 << ": "<< str << std::endl;
         if(count == 0) {
           *first = str;
           count++;
@@ -805,7 +805,7 @@ void splitArrayAndPrint(char arr[], int size, int step,std::string* first, std::
 }
 
 
-
+uint8_t strat_mode = 0;
 void loop(){
   
   if (!client.connected()) reconnect(); // check if client is connected 
@@ -819,8 +819,10 @@ void loop(){
   std::string DTC1;
   std::string DTC2;
   std::string DTC3;
-
-
+  if(strat_mode == 0) {
+    delay(1000);
+    strat_mode =1;
+  }
   int step = 5; 
   uint16_t dataReceived = SPI.transfer16(dataToSend);
 
@@ -842,31 +844,62 @@ void loop(){
       DTC [0] = (char)SPI.transfer16(dataToSend);
      for(uint8_t i = 1; i < 15 ; i++){
       DTC [i] = (char)SPI.transfer16(dataToSend);
+      if(i == 4) {
+        Serial.print("DTC1 : ");
+        Serial.print(DTC[0]);
+        Serial.print(DTC[1]);
+        Serial.print(DTC[2]);
+        Serial.print(DTC[3]);
+        Serial.print(DTC[4]);
+        Serial.print("\n");
+      }
+      if(i == 9) {
+        Serial.print("DTC2 : ");
+        Serial.print(DTC[5]);
+        Serial.print(DTC[6]);
+        Serial.print(DTC[7]);
+        Serial.print(DTC[8]);
+        Serial.print(DTC[9]);
+        Serial.print("\n");
+      }
+      if(i == 14) {
+        Serial.print("DTC3 : ");
+        Serial.print(DTC[10]);
+        Serial.print(DTC[11]);
+        Serial.print(DTC[12]);
+        Serial.print(DTC[13]);
+        Serial.print(DTC[14]);
+        Serial.print("\n");
+      }
       delay(200);
      }
     int size = sizeof(DTC) / sizeof(DTC[0]);
     splitArrayAndPrint(DTC,size,step,&DTC1,&DTC2,&DTC3);
 
 DynamicJsonDocument Sensors_Readings_DTCs(2048);
-  Sensors_Readings_DTCs["s_100_10"] = Sensors[0];
-  Sensors_Readings_DTCs["s_101_1"] = Sensors[1];
-  Sensors_Readings_DTCs["s_102_100"] = Sensors[2];
-  Sensors_Readings_DTCs["s_103_1"] = Sensors[3];
-  Sensors_Readings_DTCs["s_104_1"] = Sensors[4];
-  Sensors_Readings_DTCs["s_105_1"] = Sensors[5];
-  Sensors_Readings_DTCs["s_106_1"] = Sensors[6];
-  Sensors_Readings_DTCs["s_107_10"] = Sensors[7];
+
+    Sensors_Readings_DTCs["s_100_1"] = Sensors[1];
+    Sensors_Readings_DTCs["s_101_100"] = Sensors[6];
+    Sensors_Readings_DTCs["s_102_100"] = Sensors[7];
+    Sensors_Readings_DTCs["s_103_1"] = Sensors[5];
+    Sensors_Readings_DTCs["s_104_1"] = Sensors[3];
+    Sensors_Readings_DTCs["s_105_1"] = Sensors[4];
+    Sensors_Readings_DTCs["s_106_10"] = Sensors[0];
+    Sensors_Readings_DTCs["s_107_100"] = Sensors[2];
   
   Sensors_Readings_DTCs["t_1: "] = DTC1;
   Sensors_Readings_DTCs["t_2: "] = DTC2;
   Sensors_Readings_DTCs["t_3: "] = DTC3;
 
+
+//6346bed2-a0ec-4626-bea4-ab39775ed221  
   char mqtt_message[1024];
   serializeJson(Sensors_Readings_DTCs, mqtt_message);
-  publishMessage("54788d21-9253-4caf-a40b-7d569f9a5885", mqtt_message, true);
+  publishMessage("18cfa891-b3c4-4ee7-b467-ca0c9ec39950", mqtt_message, true);
 
     dataReceived = 0;
   }
   //exit(0);
   dataReceived = 0;
+  delay(1000);
 }

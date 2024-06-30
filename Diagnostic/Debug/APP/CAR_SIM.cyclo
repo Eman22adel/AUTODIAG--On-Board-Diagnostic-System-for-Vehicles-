@@ -1,3 +1,0 @@
-../APP/CAR_SIM.c:14:13:HAL_CAR_SIM_Init	1
-../APP/CAR_SIM.c:25:13:HAL_CAR_SIM_Receive	5
-../APP/CAR_SIM.c:56:13:HAL_CAR_SIM_MainFunction	1

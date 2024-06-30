@@ -8,12 +8,30 @@
 #ifndef SERIAL_COM_H_
 #define SERIAL_COM_H_
 
-Return_Type HAL_SERIAL_COMH_Init(void);
 
-Return_Type HAL_SERIAL_COMH_Receive(uint8_t * RXBUFFER_SIZE);
+typedef struct{
+	uint16_t sensor1;
+	uint16_t sensor2;
+	uint16_t sensor3;
+	uint16_t sensor4;
+	uint16_t sensor5;
+	uint16_t sensor6;
+	uint16_t sensor7;
+	uint16_t sensor8;
 
-Return_Type HAL_SERIAL_COMH_Send(uint8_t ID_REQUEST[],uint8_t size);
+	uint8_t DTC_1[5];
+	uint8_t DTC_2[5];
+	uint8_t DTC_3[5];
 
-Return_Type  COPY_STRING(uint8_t arr1[],uint8_t arr2[],uint8_t start,uint8_t end);
+}SYSTEM_Data;
+
+Return_Type SERIAL_COM_Init(void);
+
+Return_Type SERIAL_COM_Receive(uint8_t * RXBUFFER);
+
+Return_Type SERIAL_COM_Send(uint8_t  *TXBUFFER , uint8_t size);
+
+//Return_Type SERIAL_COM_Send(void);
+
 
 #endif /* SERIAL_COM_H_ */
