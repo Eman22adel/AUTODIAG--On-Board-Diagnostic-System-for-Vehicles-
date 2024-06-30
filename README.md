@@ -120,10 +120,19 @@ and performance standards, Our System provided Four Services:
  ![image](https://github.com/Eman22adel/AUTODIAG--On-Board-Diagnostic-System-for-Vehicles-/blob/main/Screenshot%202024-05-15%20143440.png)
 
 # 3. ESP8266:   
-# HARDWARE :
-# SOFTWARE :
-# PROTOCOL :
+![image](https://github.com/Eman22adel/AUTODIAG--On-Board-Diagnostic-System-for-Vehicles-/blob/main/esp.png)
+# HARDWARE:
+NodeMCU ESP8266 is an open-source firmware and development kit that allows developers to create IOT projects using the ESP8266 Wi-Fi module. The ESP8266 is a low-cost Wi-Fi module that can connect to a Wi-Fi network and communicate with other devices over the internet.
+NodeMCU ESP8266 can be used with MQTT Broker. It offers a wide range of features such as real time database, authentication, cloud storage, hosting, and many more. By integrating MQTT Broker with NodeMCU, developers can create IOT projects that can be controlled and monitored remotely.
+In our project, the NodeMCU acts as a communication gateway between the STM32 and the HiveMQ Broker. ESP8266 is connected to the vehicle's ECU and transmits data wirelessly through Wi-Fi. This data is then stored in the MQTT Broker database, which can be accessed remotely. 
 
+# SOFTWARE :
+Arduino  IDE  is  an  Integrated  Development  Environment  (IDE)  is  a  software application that provides a user-friendly platform for writing, compiling, and uploading code to Arduino microcontrollers. 
+
+# PROTOCOL :
+MQTT
+MQTT (Message Queuing Telemetry Transport) is a lightweight, publish-subscribe- based  messaging  protocol  designed  for  resource-constrained  devices  and  low- bandwidth, high-latency, or unreliable networks. It plays a crucial role on the Internet of  Things  (IoT)  ecosystem,  enabling  efficient  communication  between  sensors, actuators, and other devices.
+In our project, MQTT is used to do communication between ESP8266 as a Client and Hive MQ as MQTT Broker.
 
 
 
